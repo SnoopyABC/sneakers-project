@@ -1,8 +1,47 @@
 <!-- eslint-disable no-debugger -->
 <script setup>
-import Header from '@/components/Header.vue'
-import CardList from '@/components/CardList.vue'
-import Drawer from '@/components/Drawer.vue'
+import { onMounted, ref, watch, reactive } from 'vue';
+import axios from 'axios';
+
+import Header from '@/components/Header.vue';
+import CardList from '@/components/CardList.vue';
+import Drawer from '@/components/Drawer.vue';
+
+const items = ref([]);
+
+const filters = reactive({
+  sortBy: 'title',
+  searchQuary: '',
+});
+
+const handleSearchChanged = (event) => {
+  filters.searchQuary = event.target.value;
+  debugger;
+};
+
+const fetchItems = async () => {
+  try {
+    const params = {
+      sortBy: filters.sortBy,
+    };
+
+    if (filters.searchQuary) {
+      params.title = `*${filters.searchQuary}`;
+    }
+
+    const { data } = await axios.get(`https://dd76fd950f2f69f3.mokky.dev/items`, { params });
+    items.value = data;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+onMounted(fetchItems);
+watch(filters, fetchItems);
+
+const onChangeSelect = (event) => {
+  filters.sortBy = event.target.value;
+};
 </script>
 
 <template>
@@ -14,24 +53,25 @@ import Drawer from '@/components/Drawer.vue'
         <h2 class="text-3xl font-bold">Все кросовки</h2>
         <div class="flex gap-4">
           <select
-          class="py-2 px-3 border border-gray-200 focus:border-gray-400 rounded-md focus:outline-none"
-        >
-          <option value="name">По названию</option>
-          <option value="price">По цене (дешевые)</option>
-          <option value="price">По цене (дорогие)</option>
-        </select>
-        <div class="relative">
-          <img src="/search.svg" class="absolute left-4 top-3" alt="" />
-          <input
-            placeholder="Поиск..."
-            class="border border-gray-200 rounded-md py-2 pl-10 pr-4 outline-none"
-          />
+            class="py-2 px-3 border border-gray-200 focus:border-gray-400 rounded-md focus:outline-none"
+            @change="onChangeSelect"
+          >
+            <option value="name">По названию</option>
+            <option value="price">По цене (дешевые)</option>
+            <option value="-price">По цене (дорогие)</option>
+          </select>
+          <div class="relative">
+            <img src="/search.svg" class="absolute left-4 top-3" alt="" />
+            <input
+              placeholder="Поиск..."
+              class="border border-gray-200 rounded-md py-2 pl-10 pr-4 outline-none"
+              @keyup.enter="handleSearchChanged"
+            />
+          </div>
         </div>
-        </div>
-
       </div>
     </div>
-    <CardList />
+    <CardList :items="items" />
   </div>
 </template>
 
