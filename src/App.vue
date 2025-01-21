@@ -14,9 +14,11 @@ const filters = reactive({
   searchQuary: '',
 });
 
-const handleSearchChanged = (event) => {
+const onSearchChanged = (event) => {
   filters.searchQuary = event.target.value;
-  debugger;
+};
+const onChangeSelect = (event) => {
+  filters.sortBy = event.target.value;
 };
 
 const fetchItems = async () => {
@@ -30,18 +32,45 @@ const fetchItems = async () => {
     }
 
     const { data } = await axios.get(`https://dd76fd950f2f69f3.mokky.dev/items`, { params });
-    items.value = data;
+    items.value = data.map((element) => {
+      return {
+        ...element,
+        isFavorite: false,
+        isLiked: false,
+      };
+    });
   } catch (e) {
     console.log(e);
   }
 };
 
-onMounted(fetchItems);
-watch(filters, fetchItems);
+const fetchFavorites = async () => {
+  try {
+    const { data: aFavorites } = await axios.get(`https://dd76fd950f2f69f3.mokky.dev/favorites`);
+    items.value = items.value.map((item) => {
+      const favorite = aFavorites.find((favorite) => favorite.parentId === item.id);
 
-const onChangeSelect = (event) => {
-  filters.sortBy = event.target.value;
+      if (!favorite) {
+        return item;
+      }
+
+      return {
+        ...item,
+        isFavorite: true,
+        favoriteId: favorite.id,
+      };
+    });
+    console.log(items.value);
+  } catch (e) {
+    console.log(e);
+  }
 };
+
+onMounted(() => {
+  fetchItems();
+  fetchFavorites();
+});
+watch(filters, fetchItems);
 </script>
 
 <template>
@@ -65,7 +94,7 @@ const onChangeSelect = (event) => {
             <input
               placeholder="Поиск..."
               class="border border-gray-200 rounded-md py-2 pl-10 pr-4 outline-none"
-              @keyup.enter="handleSearchChanged"
+              @keyup.enter="onSearchChanged"
             />
           </div>
         </div>

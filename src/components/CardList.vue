@@ -1,14 +1,14 @@
 <!-- eslint-disable no-debugger -->
 <script setup>
-import Card from './Card.vue'
+import Card from './Card.vue';
 
 defineProps({
   items: Array,
-})
+});
 
 const onClickAdd = () => {
-  alert('Clicked add')
-}
+  alert('Clicked add');
+};
 </script>
 
 <template>
@@ -20,6 +20,7 @@ const onClickAdd = () => {
       :title="item.title"
       :price="item.price"
       :onAddClicked="onClickAdd"
+      :isFavorite="item.isFavorite"
     />
   </div>
 </template>
