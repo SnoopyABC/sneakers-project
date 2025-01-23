@@ -1,81 +1,79 @@
 <!-- eslint-disable no-debugger -->
 <script setup>
 import { onMounted, ref, watch, reactive } from 'vue';
-import axios from 'axios';
-
 import CardList from '../components/CardList.vue';
+import { useSneakersStore } from '../stores/sneakers';
 import Drawer from '../components/Drawer.vue';
 
-const items = ref([]);
+const sneakersStore = useSneakersStore();
 
-const filters = reactive({
-  sortBy: 'title',
-  searchQuary: '',
-});
+
 
 const onSearchChanged = (event) => {
-  filters.searchQuary = event.target.value;
+  sneakersStore.filters.searchQuary = event.target.value;
 };
+
 const onChangeSelect = (event) => {
-  filters.sortBy = event.target.value;
+  sneakersStore.filters.sortBy = event.target.value;
 };
 
-const fetchItems = async () => {
-  try {
-    const params = {
-      sortBy: filters.sortBy,
-    };
 
-    if (filters.searchQuary) {
-      params.title = `*${filters.searchQuary}`;
-    }
+watch(sneakersStore.filters, sneakersStore.fetchItems);
 
-    const { data } = await axios.get(`https://dd76fd950f2f69f3.mokky.dev/items`, { params });
-    items.value = data.map((element) => {
-      return {
-        ...element,
-        isFavorite: false,
-        isLiked: false,
-      };
-    });
-  } catch (e) {
-    console.log(e);
-  }
-};
+// const fetchItems = async () => {
+//   try {
+//     const params = {
+//       sortBy: filters.sortBy,
+//     };
 
-const fetchFavorites = async () => {
-  try {
-    const { data: aFavorites } = await axios.get(`https://dd76fd950f2f69f3.mokky.dev/favorites`);
-    items.value = items.value.map((item) => {
-      const favorite = aFavorites.find((favorite) => favorite.parentId === item.id);
+//     if (filters.searchQuary) {
+//       params.title = `*${filters.searchQuary}`;
+//     }
 
-      if (!favorite) {
-        return item;
-      }
+//     const { data } = await axios.get(`https://dd76fd950f2f69f3.mokky.dev/items`, { params });
+//     items.value = data.map((element) => {
+//       return {
+//         ...element,
+//         isFavorite: false,
+//         isLiked: false,
+//       };
+//     });
+//   } catch (e) {
+//     console.log(e);
+//   }
+// };
 
-      return {
-        ...item,
-        isFavorite: true,
-        favoriteId: favorite.id,
-      };
-    });
-    console.log(items.value);
-  } catch (e) {
-    console.log(e);
-  }
-};
+// const fetchFavorites = async () => {
+//   try {
+//     const { data: aFavorites } = await axios.get(`https://dd76fd950f2f69f3.mokky.dev/favorites`);
+//     items.value = items.value.map((item) => {
+//       const favorite = aFavorites.find((favorite) => favorite.parentId === item.id);
+
+//       if (!favorite) {
+//         return item;
+//       }
+
+//       return {
+//         ...item,
+//         isFavorite: true,
+//         favoriteId: favorite.id,
+//       };
+//     });
+//   } catch (e) {
+//     console.log(e);
+//   }
+// };
 
 const handleCkickAdded = (item) => {
-  debugger
+  debugger;
   item.isFavorite = !item.isFavorite;
-  debugger
+  debugger;
 };
 
 onMounted(() => {
-  fetchItems();
-  fetchFavorites();
+  sneakersStore.fetchItems();
+  //fetchFavorites();
 });
-watch(filters, fetchItems);
 </script>
 
 <template>
@@ -101,7 +99,6 @@ watch(filters, fetchItems);
         </div>
       </div>
     </div>
-    <CardList :items="items" @on-click-added="handleCkickAdded" />
+    <CardList :items="sneakersStore.items" @on-click-added="handleCkickAdded" />
   </div>
-
 </template>

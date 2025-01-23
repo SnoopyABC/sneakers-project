@@ -1,3 +1,13 @@
+<script setup>
+// import { useSneakersStore } from '../stores/sneakers';
+// const sneakersStore = useSneakersStore();
+// console.log(sneakersStore);
+
+// const onButtonClick = () => {
+//   sneakersStore.increment();
+// };
+</script>
+
 <template>
   <header class="flex justify-between border-b border-slate-200 px-10 py-8">
     <RouterLink to="/">
@@ -13,7 +23,7 @@
     <ul class="flex items-center gap-10">
       <li class="flex items-center gap-3 cursor-pointer">
         <img src="/cart.svg" alt="Cart" />
-        <b>1205 руб.</b>
+        <b>0</b>
       </li>
       <RouterLink to="/favorites">
         <li class="flex items-center gap-3 cursor-pointer">
