@@ -6,9 +6,14 @@ defineProps({
   items: Array,
 });
 
+const emit = defineEmits(['onClickAdded'])
+
 const onClickAdd = () => {
   alert('Clicked add');
+  emit('onClickAdded', item)
 };
+
+
 </script>
 
 <template>
@@ -21,6 +26,9 @@ const onClickAdd = () => {
       :price="item.price"
       :onAddClicked="onClickAdd"
       :isFavorite="item.isFavorite"
+      :onAddFavorites="() => {
+        emit('onClickAdded', item);
+      }"
     />
   </div>
 </template>

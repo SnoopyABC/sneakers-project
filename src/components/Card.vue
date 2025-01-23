@@ -1,27 +1,20 @@
 <script setup>
-import { ref } from 'vue';
-
 defineProps({
   title: String,
   img: String,
   price: Number,
   isFavorite: Boolean,
   isAdded: Boolean,
+  onAddFavorites: Function,
   onAddClicked: Function,
 });
-
-const isLiked = ref(false);
-
-const onClick = () => {
-  isLiked.value = !isLiked.value;
-};
 </script>
 
 <template>
   <div
     class="relative flex flex-col w-full border border-slate-100 rounded-xl p-8 cursor-pointer transition hover:shadow-xl hover:transform hover:-translate-y-2"
   >
-    <div @click="onClick" class="absolute top-8 left-8">
+    <div @click="onAddFavorites" class="absolute top-8 left-8">
       <img :src="!isFavorite ? '/like-1.svg' : '/like-2.svg'" alt="Favorite" />
     </div>
     <img :src="img" class="w-full" alt="Sneaker" />
